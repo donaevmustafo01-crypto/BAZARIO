@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SavdoHub — Бозори Тоҷикистон</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #F9FAFB; max-width: 480px; margin: 0 auto; }
+::-webkit-scrollbar { display: none; }
+
+/* NAV */
+.nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #fff; border-top: 1px solid #E5E7EB; display: flex; padding: 6px 0 10px; box-shadow: 0 -2px 16px rgba(0,0,0,.07); z-index: 999; }
+.nav-btn { flex: 1; border: none; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0; font-family: inherit; }
+.nav-ico { font-size: 20px; }
+.nav-lbl { font-size: 9px; font-weight: 800; color: #9CA3AF; }
+.nav-btn.active .nav-lbl { color: #FF5722; }
+.nav-badge { position: absolute; top: 2px; right: calc(50% - 14px); background: #EF4444; color: #fff; border-radius: 10px; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; border: 2px solid #fff; }
+.nav-dot { position: absolute; bottom: -10px; width: 20px; height: 3px; background: #FF5722; border-radius: 2px; }
+
+/* PAGES */
+.page { display: none; padding-bottom: 80px; min-height: 100vh; }
+.page.active { display: block; }
+
+/* HEADER */
+.header { background: linear-gradient(135deg, #FF5722 0%, #FF8A50 100%); padding: 18px 16px 22px; position: relative; overflow: hidden; }
+.header::before { content: ''; position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; border-radius: 50%; background: rgba(255,255,255,.08); }
+.header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; position: relative; z-index: 1; }
+.logo { font-size: 20px; font-weight: 900; color: #fff; }
+.logo-sub { font-size: 11px; color: rgba(255,255,255,.8); margin-bottom: 2px; }
+.header-btns { display: flex; gap: 8px; }
+.header-btn { background: rgba(255,255,255,.2); border: none; border-radius: 50%; width: 38px; height: 38px; color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
+.notif-dot { position: absolute; top: 5px; right: 5px; width: 9px; height: 9px; background: #FBB024; border-radius: 50%; border: 2px solid #FF5722; }
+.search-box { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 14px; padding: 10px 14px; position: relative; z-index: 1; }
+.search-box input { flex: 1; border: none; outline: none; font-size: 14px; font-family: inherit; color: #1F2937; }
+
+/* CARDS */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.section { margin-bottom: 18px; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.section-title { font-weight: 900; font-size: 16px; color: #1F2937; }
+.see-all { font-size: 12px; color: #FF5722; font-weight: 700; cursor: pointer; }
+
+.pcard { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.07); cursor: pointer; }
+.pcard-img { height: 120px; background: linear-gradient(135deg,#FFF8F0,#FFEFDF); display: flex; align-items: center; justify-content: center; font-size: 52px; position: relative; }
+.pcard-disc { position: absolute; top: 7px; left: 7px; background: #EF4444; color: #fff; border-radius: 8px; padding: 2px 7px; font-size: 10px; font-weight: 800; }
+.pcard-badge { position: absolute; bottom: 7px; left: 7px; background: #F59E0B; color: #fff; border-radius: 8px; padding: 2px 7px; font-size: 9px; font-weight: 800; }
+.pcard-like { position: absolute; top: 7px; right: 7px; background: #fff; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+.pcard-video { position: absolute; bottom: 7px; right: 7px; background: rgba(0,0,0,.6); border-radius: 8px; padding: 2px 7px; color: #fff; font-size: 9px; font-weight: 800; }
+.pcard-body { padding: 10px; }
+.pcard-name { font-size: 12px; font-weight: 700; color: #1F2937; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pcard-stars { font-size: 10px; color: #F59E0B; margin-bottom: 5px; }
+.pcard-price { font-size: 14px; font-weight: 900; color: #FF5722; }
+.pcard-orig { font-size: 10px; color: #9CA3AF; text-decoration: line-through; margin-left: 5px; }
+.pcard-btn { width: 100%; background: linear-gradient(135deg,#FF5722,#FF7043); color: #fff; border: none; border-radius: 10px; padding: 8px; font-weight: 800; font-size: 11px; cursor: pointer; font-family: inherit; margin-top: 8px; }
+
+/* SHOP CARD */
+.scard { background: #fff; border-radius: 16px; padding: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.07); cursor: pointer; margin-bottom: 10px; }
+.scard-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.scard-logo { width: 46px; height: 46px; border-radius: 12px; background: linear-gradient(135deg,#FFF3E0,#FFE0CC); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.scard-info { flex: 1; min-width: 0; }
+.scard-name { font-weight: 800; font-size: 14px; color: #1F2937; }
+.scard-city { font-size: 11px; color: #6B7280; }
+.scard-rating { text-align: right; font-size: 12px; font-weight: 800; color: #F59E0B; }
+.scard-desc { font-size: 12px; color: #6B7280; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tag { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 9px; border-radius: 20px; }
+
+/* CATEGORIES */
+.cats { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+.cat { background: #fff; border-radius: 14px; padding: 12px 6px; text-align: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.cat-ico { font-size: 26px; margin-bottom: 5px; }
+.cat-name { font-size: 10px; font-weight: 800; color: #374151; }
+
+/* VIDEO BAZAAR */
+.vbaz { border-radius: 20px; overflow: hidden; position: relative; height: 380px; background: linear-gradient(160deg,#0D0D1A,#1A1A2E,#0D2137); }
+.vbaz-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 110px; opacity: .8; }
+.vbaz-overlay { position: absolute; inset: 0; background: linear-gradient(to top,rgba(0,0,0,.92) 0%,transparent 55%); }
+.vbaz-top { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; justify-content: space-between; align-items: center; }
+.vbaz-label { background: rgba(0,0,0,.55); border-radius: 20px; padding: 4px 12px; color: #fff; font-size: 11px; font-weight: 800; }
+.vbaz-dots { display: flex; gap: 5px; }
+.vbaz-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.15); border: none; border-radius: 50%; width: 38px; height: 38px; color: #fff; font-size: 18px; cursor: pointer; }
+.vbaz-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 18px 16px 20px; }
+.vbaz-btns { display: flex; flex-direction: column; gap: 8px; }
+.vbaz-btn { width: 44px; height: 44px; border-radius: 12px; border: none; font-size: 18px; cursor: pointer; }
+
+/* MAP */
+.mapview { border-radius: 16px; overflow: hidden; height: 240px; background: linear-gradient(135deg,#E3F2FD,#BBDEFB,#E3F2FD); position: relative; }
+.map-street-h { position: absolute; top: 44%; left: 0; right: 0; height: 5px; background: rgba(150,190,230,.45); }
+.map-street-v { position: absolute; top: 0; bottom: 0; left: 49%; width: 5px; background: rgba(150,190,230,.45); }
+.map-label { position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,.92); border-radius: 10px; padding: 4px 10px; font-size: 11px; font-weight: 800; }
+.map-pin { position: absolute; transform: translate(-50%,-100%); cursor: pointer; z-index: 10; }
+.map-pin-inner { width: 32px; height: 32px; border-radius: 50% 50% 50% 0; display: flex; align-items: center; justify-content: center; font-size: 15px; box-shadow: 0 3px 10px rgba(0,0,0,.2); transform: rotate(-45deg); }
+.map-pin-inner span { transform: rotate(45deg); display: block; }
+.map-popup { position: absolute; background: #fff; border-radius: 12px; padding: 10px 12px; box-shadow: 0 4px 20px rgba(0,0,0,.15); min-width: 150px; z-index: 20; }
+
+/* PROMO BANNER */
+.promo { background: linear-gradient(135deg,#1A1A2E,#16213E); border-radius: 20px; padding: 18px; margin-bottom: 18px; position: relative; overflow: hidden; }
+.promo-bg { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 68px; opacity: .15; }
+.promo-tag { font-size: 10px; font-weight: 800; color: #FF5722; letter-spacing: 1px; margin-bottom: 5px; }
+.promo-title { font-size: 20px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+.promo-sub { font-size: 12px; color: rgba(255,255,255,.65); margin-bottom: 14px; }
+.promo-btn { background: rgba(255,255,255,.18); border: none; border-radius: 12px; padding: 10px 18px; color: #fff; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; }
+
+/* REFERRAL */
+.ref-banner { background: linear-gradient(135deg,#10B981,#059669); border-radius: 20px; padding: 18px; margin-bottom: 4px; }
+.ref-title { font-size: 18px; font-weight: 900; color: #fff; margin-bottom: 5px; }
+.ref-sub { font-size: 12px; color: rgba(255,255,255,.85); margin-bottom: 10px; }
+.ref-box { background: rgba(255,255,255,.18); border-radius: 12px; padding: 9px 12px; display: flex; justify-content: space-between; align-items: center; }
+.ref-link { color: #fff; font-weight: 800; font-size: 13px; }
+.ref-copy { background: #fff; border: none; border-radius: 8px; padding: 5px 11px; font-weight: 800; font-size: 11px; cursor: pointer; color: #059669; font-family: inherit; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); align-items: flex-end; justify-content: center; z-index: 9999; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; }
+.modal-box { background: #fff; border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; padding: 20px; }
+.modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.modal-title { font-weight: 900; font-size: 17px; }
+.modal-close { background: #F3F4F6; border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+.modal-img { height: 180px; background: linear-gradient(135deg,#FFF8F0,#FFEFDF); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 80px; margin-bottom: 14px; position: relative; }
+.modal-tabs { display: flex; gap: 4px; background: #F3F4F6; border-radius: 12px; padding: 4px; margin-bottom: 14px; }
+.modal-tab { flex: 1; border: none; border-radius: 9px; padding: 7px 2px; font-weight: 800; font-size: 10px; cursor: pointer; background: transparent; color: #6B7280; font-family: inherit; }
+.modal-tab.active { background: #fff; color: #FF5722; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* QTY */
+.qty-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+.qty-box { display: flex; align-items: center; gap: 8px; background: #F3F4F6; border-radius: 12px; padding: 6px 12px; }
+.qty-btn { background: none; border: none; font-weight: 900; font-size: 18px; cursor: pointer; color: #FF5722; }
+.qty-val { font-weight: 900; font-size: 15px; min-width: 20px; text-align: center; }
+.add-btn { flex: 1; background: linear-gradient(135deg,#FF5722,#FF7043); color: #fff; border: none; border-radius: 12px; padding: 12px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; }
+
+/* CHAT */
+.chat-msgs { height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 7px; margin-bottom: 10px; }
+.chat-msg { border-radius: 12px; padding: 8px 12px; font-size: 12px; max-width: 78%; }
+.chat-msg.buyer { background: #FF5722; color: #fff; align-self: flex-end; }
+.chat-msg.seller { background: #F3F4F6; color: #1F2937; align-self: flex-start; }
+.chat-input { display: flex; gap: 8px; }
+.chat-input input { flex: 1; border: 1.5px solid #E5E7EB; border-radius: 10px; padding: 9px 12px; font-size: 13px; outline: none; font-family: inherit; }
+.chat-send { background: #FF5722; border: none; border-radius: 10px; padding: 9px 14px; color: #fff; font-weight: 800; cursor: pointer; }
+
+/* CART */
+.cart-item { background: #fff; border-radius: 16px; padding: 12px; margin-bottom: 10px; display: flex; gap: 10px; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.cart-img { width: 56px; height: 56px; border-radius: 12px; background: #FFF8F0; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+.cart-info { flex: 1; min-width: 0; }
+.cart-name { font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cart-price { font-weight: 900; color: #FF5722; font-size: 14px; }
+.cart-qty { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.cqty-btn { width: 26px; height: 26px; border-radius: 8px; cursor: pointer; font-weight: 900; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.cqty-val { font-weight: 800; font-size: 14px; min-width: 20px; text-align: center; }
+.cart-del { background: #FEE2E2; border: none; border-radius: 10px; width: 34px; height: 34px; cursor: pointer; color: #EF4444; font-size: 15px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+
+/* ORDER TRACKER */
+.otrack { background: #fff; border-radius: 16px; padding: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.07); margin-bottom: 12px; }
+.otrack-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.otrack-steps { display: flex; }
+.ostep { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
+.ostep-line { position: absolute; top: 15px; left: 50%; width: 100%; height: 3px; z-index: 0; }
+.ostep-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; z-index: 1; position: relative; }
+.ostep-lbl { font-size: 9px; margin-top: 4px; text-align: center; }
+
+/* PROFILE */
+.profile-header { background: linear-gradient(135deg,#FF5722,#FF7043); padding: 22px 16px 28px; }
+.profile-avatar { width: 62px; height: 62px; border-radius: 50%; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; font-size: 28px; border: 3px solid rgba(255,255,255,.4); }
+.profile-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 14px; }
+.pstat { background: rgba(255,255,255,.18); border-radius: 12px; padding: 10px 6px; text-align: center; }
+.menu-item { background: #fff; border-radius: 14px; padding: 14px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.05); cursor: pointer; }
+
+/* ADMIN */
+.admin-header { background: linear-gradient(135deg,#1F2937,#111827); padding: 18px 14px 14px; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.stat-card { background: #fff; border-radius: 14px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+
+/* CHIPS */
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+.chip { flex-shrink: 0; border: none; border-radius: 20px; padding: 7px 14px; font-weight: 800; font-size: 11px; cursor: pointer; font-family: inherit; background: #F3F4F6; color: #374151; }
+.chip.active { background: #FF5722; color: #fff; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1F2937; color: #fff; border-radius: 14px; padding: 11px 20px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 24px rgba(0,0,0,.25); z-index: 9998; white-space: nowrap; display: none; }
+
+/* CHECKOUT */
+.form-input { width: 100%; border: 1.5px solid #E5E7EB; border-radius: 12px; padding: 12px 14px; font-size: 13px; font-family: inherit; outline: none; margin-bottom: 10px; box-sizing: border-box; }
+.pay-opt { display: flex; gap: 12px; padding: 12px; border-radius: 12px; border: 1.5px solid #E5E7EB; margin-bottom: 8px; cursor: pointer; background: #fff; }
+.pay-opt.selected { border-color: #FF5722; background: #FFF8F4; }
+.pay-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #D1D5DB; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.pay-radio.selected { border-color: #FF5722; }
+.pay-dot { width: 10px; height: 10px; border-radius: 50%; background: #FF5722; display: none; }
+.pay-radio.selected .pay-dot { display: block; }
+
+/* PLANS */
+.plan-card { border-radius: 18px; padding: 18px; margin-bottom: 14px; position: relative; }
+.plan-badge { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: #F59E0B; color: #fff; border-radius: 20px; padding: 3px 16px; font-size: 10px; font-weight: 900; white-space: nowrap; }
+
+/* UTIL */
+.pad { padding: 0 14px; }
+.mt12 { margin-top: 12px; }
+.fw9 { font-weight: 900; }
+.fs16 { font-size: 16px; }
+.clr { color: #1F2937; }
+</style>
+</head>
+<body>
+
+<!-- PAGES -->
+<div id="page-home" class="page active">
+  <div class="header">
+    <div class="header-top">
+      <div><div class="logo-sub">🇹🇯 Тоҷикистон</div><div class="logo">SavdoHub</div></div>
+      <div class="header-btns">
+        <button class="header-btn" onclick="toggleNotif()">🔔<div class="notif-dot"></div></button>
+        <button class="header-btn" onclick="goPage('profile')">👤</button>
+      </div>
+    </div>
+    <div class="search-box">
+      <span style="font-size:17px;color:#9CA3AF">🔍</span>
+      <input id="search-input" type="text" placeholder="Маҳсулот ҷустуҷӯ кун..." oninput="doSearch(this.value)">
+      <button onclick="clearSearch()" id="search-clear" style="display:none;border:none;background:none;cursor:pointer;color:#9CA3AF;font-size:16px">✕</button>
+    </div>
+    <div id="notif-panel" style="display:none;position:absolute;top:72px;right:14px;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.18);width:270px;z-index:200;overflow:hidden">
+      <div style="padding:12px 14px;border-bottom:1px solid #F0F0F0;font-weight:900;font-size:13px">🔔 Огоҳиномаҳо</div>
+      <div style="padding:10px 14px;display:flex;gap:10px;border-bottom:1px solid #FAFAFA"><span style="font-size:18px">🛒</span><div><div style="font-size:12px">Фармоиши шумо равона шуд!</div><div style="font-size:10px;color:#9CA3AF">5 дақ пеш</div></div></div>
+      <div style="padding:10px 14px;display:flex;gap:10px;border-bottom:1px solid #FAFAFA"><span style="font-size:18px">⭐</span><div><div style="font-size:12px">TechHub маҳсулоти нав илова кард</div><div style="font-size:10px;color:#9CA3AF">1 соат пеш</div></div></div>
+      <div style="padding:10px 14px;display:flex;gap:10px"><span style="font-size:18px">🎁</span><div><div style="font-size:12px">Тахфиф 20% барои шумо!</div><div style="font-size:10px;color:#9CA3AF">2 соат пеш</div></div></div>
+    </div>
+  </div>
+  <div class="pad" id="home-content">
+    <!-- Search results -->
+    <div id="search-results" style="display:none;margin-top:14px"></div>
+    <!-- Main content -->
+    <div id="main-content">
+      <div class="section" style="margin-top:18px">
+        <div class="section-title" style="margin-bottom:12px">Категорияҳо</div>
+        <div class="cats">
+          <div class="cat" onclick="goPage('catalog')"><div class="cat-ico">📱</div><div class="cat-name">Электроника</div></div>
+          <div class="cat" onclick="goPage('catalog')"><div class="cat-ico">👗</div><div class="cat-name">Либос</div></div>
+          <div class="cat" onclick="goPage('catalog')"><div class="cat-ico">🏠</div><div class="cat-name">Хона</div></div>
+          <div class="cat" onclick="goPage('catalog')"><div class="cat-ico">🧸</div><div class="cat-name">Бозичаҳо</div></div>
+          <div class="cat" onclick="goPage('catalog')"><div class="cat-ico">🚗</div><div class="cat-name">Авто</div></div>
+          <div class="cat" onclick="goPage('catalog')"><div class="cat-ico">🍎</div><div class="cat-name">Ғизо</div></div>
+          <div class="cat" onclick="goPage('catalog')"><div class="cat-ico">⚽</div><div class="cat-name">Варзиш</div></div>
+          <div class="cat" onclick="goPage('catalog')"><div class="cat-ico">📦</div><div class="cat-name">Дигар</div></div>
+        </div>
+      </div>
+
+      <div class="promo">
+        <div class="promo-bg">🛍️</div>
+        <div class="promo-tag">🎁 МАХСУС ПЕШНИҲОД</div>
+        <div class="promo-title">Тахфиф то 50%!</div>
+        <div class="promo-sub">Дар маҳсулоти интихобшуда</div>
+        <button class="promo-btn" onclick="goPage('catalog')">Харид кун →</button>
+      </div>
+
+      <div class="section">
+        <div class="section-header"><div class="section-title">📹 Видео Бозор</div><span class="see-all">Ҳама</span></div>
+        <div id="vbaz" class="vbaz">
+          <div class="vbaz-emoji" id="vbaz-emoji">📱</div>
+          <div class="vbaz-overlay"></div>
+          <div class="vbaz-top">
+            <div class="vbaz-label">📹 Видео Бозор</div>
+            <div class="vbaz-dots" id="vbaz-dots"></div>
+          </div>
+          <button class="vbaz-nav" style="left:12px" onclick="vbazNav(-1)">‹</button>
+          <button class="vbaz-nav" style="right:12px" onclick="vbazNav(1)">›</button>
+          <div class="vbaz-info">
+            <div style="display:flex;align-items:flex-end;justify-content:space-between">
+              <div>
+                <div id="vbaz-name" style="color:#fff;font-weight:900;font-size:17px;margin-bottom:4px"></div>
+                <div id="vbaz-stars" style="font-size:11px;color:#F59E0B;margin-bottom:5px"></div>
+                <div id="vbaz-price" style="color:#FF8A65;font-weight:900;font-size:20px"></div>
+              </div>
+              <div class="vbaz-btns">
+                <button class="vbaz-btn" style="background:rgba(255,255,255,.18)" onclick="vbazView()">👁️</button>
+                <button class="vbaz-btn" style="background:#FF5722" onclick="vbazAdd()">🛒</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header"><div class="section-title">🔥 Маъмултаринҳо</div><span class="see-all" onclick="goPage('catalog')">Ҳама →</span></div>
+        <div class="grid2" id="trending-grid"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-header"><div class="section-title">🗺️ Дӯконҳои наздик</div></div>
+        <div class="mapview">
+          <div class="map-street-h"></div>
+          <div class="map-street-v"></div>
+          <div class="map-label">📍 Душанбе</div>
+          <div class="map-pin" style="left:48%;top:38%" onclick="mapPin(0)"><div class="map-pin-inner" style="background:#FF5722"><span>🏪</span></div></div>
+          <div class="map-pin" style="left:55%;top:52%" onclick="mapPin(1)"><div class="map-pin-inner" style="background:#FF5722"><span>👒</span></div></div>
+          <div class="map-pin" style="left:35%;top:60%" onclick="mapPin(2)"><div class="map-pin-inner" style="background:#1565C0"><span>🎠</span></div></div>
+          <div class="map-pin" style="left:62%;top:40%" onclick="mapPin(3)"><div class="map-pin-inner" style="background:#1565C0"><span>🏡</span></div></div>
+          <div class="map-pin" style="left:25%;top:45%" onclick="mapPin(4)"><div class="map-pin-inner" style="background:#1565C0"><span>💪</span></div></div>
+          <div id="map-popup" class="map-popup" style="display:none;left:30%;top:10%"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header"><div class="section-title">🏆 Дӯконҳои Беҳтарин</div><span class="see-all" onclick="goPage('shops')">Ҳама →</span></div>
+        <div id="featured-shops"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-header"><div class="section-title">🏷️ Тахфифҳо</div></div>
+        <div class="grid2" id="discount-grid"></div>
+      </div>
+
+      <div class="ref-banner">
+        <div class="ref-title">🎁 Дӯсти худро даъват кун!</div>
+        <div class="ref-sub">Шумо ва дӯстатон ҳар кадом 5 сомонӣ бонус мегиред</div>
+        <div class="ref-box">
+          <span class="ref-link">savdohub.tj/ref/AH234</span>
+          <button class="ref-copy" onclick="copyRef(this)">📋 Нусха</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CATALOG -->
+<div id="page-catalog" class="page">
+  <div style="background:#fff;padding:14px 14px 0;box-shadow:0 2px 10px rgba(0,0,0,.05);position:sticky;top:0;z-index:50">
+    <div style="font-weight:900;font-size:18px;margin-bottom:12px">🛍️ Маҳсулотҳо</div>
+    <div class="chips" id="cat-chips">
+      <button class="chip active" onclick="filterCat('all',this)">Ҳама</button>
+      <button class="chip" onclick="filterCat('electronics',this)">📱 Электроника</button>
+      <button class="chip" onclick="filterCat('clothing',this)">👗 Либос</button>
+      <button class="chip" onclick="filterCat('home',this)">🏠 Хона</button>
+      <button class="chip" onclick="filterCat('toys',this)">🧸 Бозичаҳо</button>
+      <button class="chip" onclick="filterCat('auto',this)">🚗 Авто</button>
+      <button class="chip" onclick="filterCat('food',this)">🍎 Ғизо</button>
+      <button class="chip" onclick="filterCat('sports',this)">⚽ Варзиш</button>
+    </div>
+    <div style="display:flex;gap:8px;padding-bottom:12px">
+      <select id="sort-sel" onchange="renderCatalog()" style="flex:1;border:1.5px solid #E5E7EB;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:600;font-family:inherit;outline:none">
+        <option value="pop">⭐ Маъмултарин</option>
+        <option value="asc">💰 Нарх: паст → боло</option>
+        <option value="desc">💰 Нарх: боло → паст</option>
+      </select>
+    </div>
+  </div>
+  <div class="pad" style="padding-top:14px">
+    <div id="cat-count" style="font-size:11px;color:#9CA3AF;margin-bottom:12px"></div>
+    <div class="grid2" id="catalog-grid"></div>
+  </div>
+</div>
+
+<!-- SHOPS -->
+<div id="page-shops" class="page">
+  <div style="background:#fff;padding:14px 14px 0;box-shadow:0 2px 10px rgba(0,0,0,.05);position:sticky;top:0;z-index:50">
+    <div style="font-weight:900;font-size:18px;margin-bottom:12px">🏪 Дӯконҳо</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;background:#F3F4F6;border-radius:12px;padding:9px 12px">
+      <span style="font-size:15px;color:#9CA3AF">🔍</span>
+      <input type="text" placeholder="Дӯкон ҷустуҷӯ..." oninput="filterShops(this.value)" style="flex:1;border:none;background:none;outline:none;font-size:13px;font-family:inherit">
+    </div>
+    <div style="display:flex;gap:8px;padding-bottom:12px">
+      <button class="chip active" style="flex:1;text-align:center" onclick="shopPlan('all',this)">Ҳама</button>
+      <button class="chip" style="flex:1;text-align:center" onclick="shopPlan('premium',this)">👑 VIP</button>
+      <button class="chip" style="flex:1;text-align:center" onclick="shopPlan('standard',this)">⭐ Стандарт</button>
+      <button class="chip" style="flex:1;text-align:center" onclick="shopPlan('basic',this)">Базавӣ</button>
+    </div>
+  </div>
+  <div class="pad" style="padding-top:14px" id="shops-list"></div>
+</div>
+
+<!-- CART -->
+<div id="page-cart" class="page">
+  <div style="background:#fff;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.05)"><div style="font-weight:900;font-size:18px" id="cart-title">🛒 Сабад</div></div>
+  <div class="pad" style="padding-top:14px" id="cart-content"></div>
+</div>
+
+<!-- ORDERS -->
+<div id="page-orders" class="page">
+  <div style="background:#fff;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.05)"><div style="font-weight:900;font-size:18px">📦 Фармоишҳои ман</div></div>
+  <div class="pad" style="padding-top:14px" id="orders-list"></div>
+</div>
+
+<!-- PROFILE -->
+<div id="page-profile" class="page">
+  <div id="profile-content"></div>
+</div>
+
+<!-- ADMIN -->
+<div id="page-admin" class="page">
+  <div class="admin-header">
+    <div style="color:rgba(255,255,255,.5);font-size:10px;margin-bottom:3px;letter-spacing:1px">🔐 МАЪМУРИЯТИ SAVDOHUB</div>
+    <div style="font-weight:900;font-size:20px;color:#fff">Панели Идора</div>
+  </div>
+  <div style="display:flex;gap:4px;padding:10px 14px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.05);overflow-x:auto">
+    <button class="chip active" style="background:#1F2937;color:#fff" onclick="adminTab('dash',this)">📊 Dashboard</button>
+    <button class="chip" onclick="adminTab('users',this)">👥 Корбарон</button>
+    <button class="chip" onclick="adminTab('orders',this)">📦 Фармоишҳо</button>
+    <button class="chip" onclick="adminTab('earn',this)">💰 Даромад</button>
+  </div>
+  <div class="pad" style="padding-top:14px" id="admin-content"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="nav" id="bottom-nav">
+  <button class="nav-btn active" onclick="goPage('home')" id="nav-home" style="position:relative">
+    <span class="nav-ico">🏠</span><span class="nav-lbl">Асосӣ</span>
+    <div class="nav-dot"></div>
+  </button>
+  <button class="nav-btn" onclick="goPage('catalog')" id="nav-catalog" style="position:relative">
+    <span class="nav-ico">🛍️</span><span class="nav-lbl">Маҳсулот</span>
+  </button>
+  <button class="nav-btn" onclick="goPage('shops')" id="nav-shops" style="position:relative">
+    <span class="nav-ico">🏪</span><span class="nav-lbl">Дӯконҳо</span>
+  </button>
+  <button class="nav-btn" onclick="goPage('cart')" id="nav-cart" style="position:relative">
+    <span class="nav-ico">🛒</span><span class="nav-lbl">Сабад</span>
+    <div id="cart-badge" class="nav-badge" style="display:none">0</div>
+  </button>
+  <button class="nav-btn" onclick="goPage('orders')" id="nav-orders" style="position:relative">
+    <span class="nav-ico">📦</span><span class="nav-lbl">Фармоишҳо</span>
+  </button>
+  <button class="nav-btn" onclick="goPage('profile')" id="nav-profile" style="position:relative">
+    <span class="nav-ico">👤</span><span class="nav-lbl">Профил</span>
+  </button>
+  <button class="nav-btn" onclick="goPage('admin')" id="nav-admin" style="position:relative">
+    <span class="nav-ico">⚙️</span><span class="nav-lbl">Идора</span>
+  </button>
+</nav>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="prod-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">Маълумоти маҳсулот</div>
+      <button class="modal-close" onclick="closeProdModal()">✕</button>
+    </div>
+    <div class="modal-img" id="modal-img"></div>
+    <div id="modal-name" style="font-weight:900;font-size:18px;margin-bottom:6px"></div>
+    <div id="modal-meta" style="display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap"></div>
+    <div id="modal-price" style="margin-bottom:14px"></div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="modalTab('info',this)">ℹ️ Маълумот</button>
+      <button class="modal-tab" onclick="modalTab('shop',this)">🏪 Дӯкон</button>
+      <button class="modal-tab" onclick="modalTab('chat',this)">💬 Чат</button>
+      <button class="modal-tab" onclick="modalTab('reviews',this)">⭐ Шарҳ</button>
+    </div>
+    <div id="tab-info" class="tab-content active"></div>
+    <div id="tab-shop" class="tab-content"></div>
+    <div id="tab-chat" class="tab-content">
+      <div class="chat-msgs" id="chat-msgs"></div>
+      <div class="chat-input">
+        <input type="text" id="chat-input" placeholder="Паём нависед..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="chat-send" onclick="sendChat()">➤</button>
+      </div>
+    </div>
+    <div id="tab-reviews" class="tab-content"></div>
+    <div class="qty-row">
+      <div class="qty-box">
+        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+        <span class="qty-val" id="modal-qty">1</span>
+        <button class="qty-btn" onclick="changeQty(1)">+</button>
+      </div>
+      <button class="add-btn" id="modal-add-btn" onclick="modalAddCart()">🛒 Ба сабад</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHOP MODAL -->
+<div class="modal-overlay" id="shop-modal">
+  <div class="modal-box" id="shop-modal-content"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const PRODUCTS = [
+  {id:1,name:"iPhone 15 Pro Max",price:8500,orig:9200,cat:"electronics",shopId:1,rating:4.8,reviews:234,stock:15,weight:0.2,img:"📱",desc:"Смартфони iPhone 15 Pro Max бо тактикаи титаниум, камераи 48MP ва чипи A17 Pro.",badge:"ТОП",video:true},
+  {id:2,name:"Куртаи занона",price:180,orig:250,cat:"clothing",shopId:2,rating:4.5,reviews:89,stock:50,weight:0.3,img:"👗",desc:"Куртаи занона аз матои сифатноки турецкӣ, андозаҳои S-XXL.",badge:"НАРХ ПАСТ",video:false},
+  {id:3,name:'Телевизор Samsung 55"',price:4200,orig:4800,cat:"electronics",shopId:1,rating:4.7,reviews:156,stock:8,weight:15,img:"📺",desc:"Телевизори Smart Samsung бо экрани 4K UHD ва HDR.",badge:"МАЪМУЛ",video:true},
+  {id:4,name:"Диван кунҷӣ",price:2800,orig:3500,cat:"home",shopId:3,rating:4.6,reviews:67,stock:5,weight:45,img:"🛋️",desc:"Диван кунҷии муосир аз кожа барои хонаи шумо.",badge:null,video:false},
+  {id:5,name:"Велосипеди кӯдакона",price:450,orig:550,cat:"toys",shopId:4,rating:4.9,reviews:312,stock:23,weight:8,img:"🚲",desc:"Велосипеди кӯдакона барои синнусоли 5-10, бехатар ва пойдор.",badge:"БЕСТСЕЛЛЕР",video:false},
+  {id:6,name:"Кофемашина DeLonghi",price:1200,orig:1400,cat:"home",shopId:3,rating:4.4,reviews:98,stock:12,weight:4,img:"☕",desc:"Кофемашинаи автоматии DeLonghi барои қаҳва дар хона.",badge:null,video:true},
+  {id:7,name:"Тренерка Adidas",price:320,orig:420,cat:"sports",shopId:5,rating:4.6,reviews:178,stock:35,weight:0.5,img:"👟",desc:"Тренеркаи Adidas барои давидан ва варзиш.",badge:"НАРХ ПАСТ",video:false},
+  {id:8,name:"MacBook Air M2",price:9800,orig:10500,cat:"electronics",shopId:1,rating:4.9,reviews:445,stock:6,weight:1.2,img:"💻",desc:"MacBook Air бо чипи M2, батареяи 18 соата.",badge:"VIP",video:true},
+  {id:9,name:"Мошини бачагона",price:85,orig:120,cat:"toys",shopId:4,rating:4.3,reviews:56,stock:100,weight:0.4,img:"🏎️",desc:"Мошини радиоидоракунандаи бачагона.",badge:null,video:false},
+  {id:10,name:"Либоси спортии мардона",price:145,orig:190,cat:"clothing",shopId:2,rating:4.5,reviews:123,stock:60,weight:0.6,img:"🧥",desc:"Либоси спортии муосир барои мардон.",badge:null,video:false},
+  {id:11,name:"Bugatti Chiron Scale",price:250,orig:320,cat:"auto",shopId:6,rating:4.7,reviews:45,stock:10,weight:1.5,img:"🚗",desc:"Моделли масштабии автомобили Bugatti 1:18.",badge:null,video:true},
+  {id:12,name:"Яблуки тоза",price:12,orig:15,cat:"food",shopId:7,rating:4.8,reviews:890,stock:500,weight:1,img:"🍎",desc:"Яблуки тоза аз боғи Вахш, 1кг.",badge:"ТОЗА",video:false},
+];
+const SHOPS = [
+  {id:1,name:"TechHub Dushanbe",logo:"🏪",rating:4.8,products:89,plan:"premium",followers:2340,city:"Душанбе",verified:true,desc:"Беҳтарин электроника дар Тоҷикистон",featured:true},
+  {id:2,name:"Fashion Palace",logo:"👒",rating:4.5,products:234,plan:"premium",followers:1567,city:"Душанбе",verified:true,desc:"Либосҳои муосир барои ҳама",featured:true},
+  {id:3,name:"Уютный Дом",logo:"🏡",rating:4.6,products:67,plan:"standard",followers:890,city:"Хуҷанд",verified:true,desc:"Мебел ва лавозимоти хона",featured:false},
+  {id:4,name:"Toys World",logo:"🎠",rating:4.9,products:145,plan:"premium",followers:3210,city:"Душанбе",verified:true,desc:"Бозичаҳо барои кӯдакони шод",featured:true},
+  {id:5,name:"Sport Life",logo:"💪",rating:4.7,products:56,plan:"standard",followers:678,city:"Кӯлоб",verified:false,desc:"Лавозимоти варзишӣ",featured:false},
+  {id:6,name:"Auto Parts TJ",logo:"🔧",rating:4.4,products:312,plan:"basic",followers:456,city:"Хуҷанд",verified:false,desc:"Эҳтиёт қисмҳои автомобил",featured:false},
+  {id:7,name:"Organic Farm",logo:"🌿",rating:4.9,products:23,plan:"basic",followers:1234,city:"Вахш",verified:true,desc:"Маҳсулоти органикии тоза",featured:false},
+];
+const ORDERS = [
+  {id:"SH-2024-001",product:"iPhone 15 Pro Max",status:"delivered",date:"2024-11-15",total:8500,ico:"📱"},
+  {id:"SH-2024-002",product:"Куртаи занона",status:"shipped",date:"2024-11-20",total:180,ico:"👗"},
+  {id:"SH-2024-003",product:"Велосипеди кӯдакона",status:"processing",date:"2024-11-22",total:450,ico:"🚲"},
+  {id:"SH-2024-004",product:"MacBook Air M2",status:"ordered",date:"2024-11-23",total:9800,ico:"💻"},
+];
+
+// STATE
+let cart = [];
+let currentPage = 'home';
+let currentProd = null;
+let currentQty = 1;
+let catFilter = 'all';
+let shopPlanFilter = 'all';
+let vbazIdx = 0;
+let loggedIn = false;
+let adminTabId = 'dash';
+let chatMsgs = [{f:'s',t:'Салом! Чӣ тавр метавонам ёрӣ расонам?'}];
+
+const fmt = p => p.toLocaleString('ru-TJ') + ' сом.';
+const stars = r => '★'.repeat(Math.round(r)) + '☆'.repeat(5-Math.round(r));
+const disc = p => p.orig ? Math.round((1-p.price/p.orig)*100) : 0;
+const sLbl = s => ({ordered:'Фармоиш дода шуд',processing:'Коркард мешавад',shipped:'Равона шуд',delivered:'Расид'}[s]);
+const sClr = s => ({ordered:'#6B7280',processing:'#F59E0B',shipped:'#3B82F6',delivered:'#10B981'}[s]);
+
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.remove('active');
+    const dot = b.querySelector('.nav-dot');
+    if(dot) dot.remove();
+  });
+  const nb = document.getElementById('nav-'+id);
+  if(nb) {
+    nb.classList.add('active');
+    const d = document.createElement('div');
+    d.className = 'nav-dot';
+    nb.appendChild(d);
+  }
+  currentPage = id;
+  if(id==='catalog') renderCatalog();
+  if(id==='shops') renderShops();
+  if(id==='cart') renderCart();
+  if(id==='orders') renderOrders();
+  if(id==='profile') renderProfile();
+  if(id==='admin') renderAdmin();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(()=>t.style.display='none', 2500);
+}
+
+function addToCart(prod) {
+  const ex = cart.find(i=>i.id===prod.id);
+  if(ex) ex.qty += (prod.qty||1);
+  else cart.push({...prod, qty: prod.qty||1});
+  updateCartBadge();
+  showToast('✅ "'+prod.name+'" ба сабад илова шуд');
+}
+
+function updateCartBadge() {
+  const total = cart.reduce((s,i)=>s+i.qty,0);
+  const badge = document.getElementById('cart-badge');
+  if(total>0) { badge.style.display='flex'; badge.textContent=total; }
+  else badge.style.display='none';
+}
+
+// PRODUCT CARD HTML
+function pcardHTML(p, compact) {
+  const d = disc(p);
+  return `<div class="pcard" onclick="openProd(${p.id})">
+    <div class="pcard-img">
+      ${p.img}
+      ${d>0?`<div class="pcard-disc">-${d}%</div>`:''}
+      ${p.badge?`<div class="pcard-badge">${p.badge}</div>`:''}
+      ${p.video?`<div class="pcard-video">▶ ВИДЕО</div>`:''}
+      <button class="pcard-like" onclick="event.stopPropagation();this.textContent=this.textContent==='🤍'?'❤️':'🤍'">🤍</button>
+    </div>
+    <div class="pcard-body">
+      <div class="pcard-name">${p.name}</div>
+      <div class="pcard-stars">${stars(p.rating)} <span style="color:#9CA3AF">(${p.reviews})</span></div>
+      <div><span class="pcard-price">${fmt(p.price)}</span>${p.orig?`<span class="pcard-orig">${fmt(p.orig)}</span>`:''}</div>
+      <button class="pcard-btn" onclick="event.stopPropagation();addToCart(PRODUCTS.find(x=>x.id===${p.id}))">🛒 Ба сабад</button>
+    </div>
+  </div>`;
+}
+
+function scardHTML(s) {
+  const planLbl = s.plan==='premium'?'👑 Премиум':s.plan==='standard'?'⭐ Стандартӣ':'Базавӣ';
+  const planClr = s.plan==='premium'?'background:#FFFBEB;color:#D97706':s.plan==='standard'?'background:#EFF6FF;color:#3B82F6':'background:#F9FAFB;color:#6B7280';
+  return `<div class="scard" onclick="openShop(${s.id})">
+    <div class="scard-top">
+      <div class="scard-logo">${s.logo}</div>
+      <div class="scard-info"><div class="scard-name">${s.name} ${s.verified?'✅':''}</div><div class="scard-city">${s.city}</div></div>
+      <div class="scard-rating">⭐ ${s.rating}<div style="font-size:10px;color:#9CA3AF;font-weight:400">${s.products} маҳсулот</div></div>
+    </div>
+    <div class="scard-desc">${s.desc}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span class="tag" style="${planClr}">${planLbl}</span>
+      <span style="font-size:11px;color:#9CA3AF">👥 ${s.followers.toLocaleString()}</span>
+    </div>
+  </div>`;
+}
+
+// HOME INIT
+function initHome() {
+  // Trending
+  const tg = document.getElementById('trending-grid');
+  tg.innerHTML = PRODUCTS.filter(p=>p.badge).slice(0,6).map(p=>pcardHTML(p,true)).join('');
+  // Featured shops
+  const fs = document.getElementById('featured-shops');
+  fs.innerHTML = SHOPS.filter(s=>s.featured).map(s=>scardHTML(s)).join('');
+  // Discounts
+  const dg = document.getElementById('discount-grid');
+  dg.innerHTML = PRODUCTS.filter(p=>p.orig).slice(0,4).map(p=>pcardHTML(p,true)).join('');
+  // Video bazaar
+  initVbaz();
+}
+
+// VIDEO BAZAAR
+const VP = PRODUCTS.filter(p=>p.video);
+function initVbaz() {
+  renderVbaz();
+}
+function renderVbaz() {
+  const p = VP[vbazIdx];
+  document.getElementById('vbaz-emoji').textContent = p.img;
+  document.getElementById('vbaz-name').textContent = p.name;
+  document.getElementById('vbaz-stars').textContent = stars(p.rating)+' '+p.reviews+' шарҳ';
+  document.getElementById('vbaz-price').textContent = fmt(p.price);
+  const dots = document.getElementById('vbaz-dots');
+  dots.innerHTML = VP.map((_,i)=>`<div style="width:${i===vbazIdx?18:6}px;height:6px;border-radius:3px;background:${i===vbazIdx?'#FF5722':'rgba(255,255,255,.35)'};transition:width .2s"></div>`).join('');
+}
+function vbazNav(d) { vbazIdx=(vbazIdx+d+VP.length)%VP.length; renderVbaz(); }
+function vbazView() { openProd(VP[vbazIdx].id); }
+function vbazAdd() { addToCart(VP[vbazIdx]); }
+
+// MAP
+const MAP_SHOPS = ['TechHub Dushanbe','Fashion Palace','Toys World','Уютный Дом','Sport Life'];
+function mapPin(i) {
+  const pop = document.getElementById('map-popup');
+  const s = SHOPS.find(x=>x.name===MAP_SHOPS[i]);
+  if(!s) return;
+  pop.style.display = pop.style.display==='block'?'none':'block';
+  pop.innerHTML = `<div style="font-weight:800;font-size:13px">${s.name}</div><div style="font-size:11px;color:#6B7280;margin-bottom:4px">${s.city}</div><div style="display:flex;gap:5px"><span style="background:#FFF3E0;color:#FF5722;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px">⭐ ${s.rating}</span><span style="background:#E3F2FD;color:#1565C0;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px">${s.products} маҳ.</span></div>`;
+}
+
+// SEARCH
+function doSearch(val) {
+  const sr = document.getElementById('search-results');
+  const mc = document.getElementById('main-content');
+  const sc = document.getElementById('search-clear');
+  if(val.trim()) {
+    sc.style.display='block';
+    mc.style.display='none';
+    sr.style.display='block';
+    const res = PRODUCTS.filter(p=>p.name.toLowerCase().includes(val.toLowerCase()));
+    sr.innerHTML = `<div style="font-weight:900;font-size:15px;margin-bottom:12px">Натиҷаҳо: "${val}"</div><div class="grid2">${res.map(p=>pcardHTML(p,true)).join('')}</div>${res.length===0?'<div style="text-align:center;padding:40px;color:#9CA3AF">😕 Ёфт нашуд</div>':''}`;
+  } else {
+    clearSearch();
+  }
+}
+function clearSearch() {
+  document.getElementById('search-input').value='';
+  document.getElementById('search-results').style.display='none';
+  document.getElementById('main-content').style.display='block';
+  document.getElementById('search-clear').style.display='none';
+}
+
+// NOTIF
+function toggleNotif() {
+  const p = document.getElementById('notif-panel');
+  p.style.display = p.style.display==='block'?'none':'block';
+}
+
+// CATALOG
+function filterCat(cat, btn) {
+  catFilter = cat;
+  document.querySelectorAll('#cat-chips .chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCatalog();
+}
+function renderCatalog() {
+  const sort = document.getElementById('sort-sel').value;
+  let list = PRODUCTS.filter(p=>catFilter==='all'||p.cat===catFilter);
+  if(sort==='asc') list.sort((a,b)=>a.price-b.price);
+  else if(sort==='desc') list.sort((a,b)=>b.price-a.price);
+  else list.sort((a,b)=>b.rating-a.rating);
+  document.getElementById('cat-count').textContent = list.length+' маҳсулот ёфт шуд';
+  document.getElementById('catalog-grid').innerHTML = list.map(p=>pcardHTML(p,true)).join('');
+}
+
+// SHOPS
+function filterShops(val) {
+  renderShops(val);
+}
+function shopPlan(plan, btn) {
+  shopPlanFilter = plan;
+  document.querySelectorAll('#page-shops .chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderShops();
+}
+function renderShops(search='') {
+  let list = SHOPS.filter(s=>(shopPlanFilter==='all'||s.plan===shopPlanFilter)&&s.name.toLowerCase().includes(search.toLowerCase()));
+  document.getElementById('shops-list').innerHTML = list.map(s=>scardHTML(s)).join('');
+}
+
+// PRODUCT MODAL
+function openProd(id) {
+  currentProd = PRODUCTS.find(p=>p.id===id);
+  currentQty = 1;
+  chatMsgs = [{f:'s',t:'Салом! Чӣ тавр метавонам ёрӣ расонам?'}];
+  const p = currentProd;
+  const shop = SHOPS.find(s=>s.id===p.shopId);
+  const d = disc(p);
+
+  document.getElementById('modal-img').innerHTML = `${p.img}${d>0?`<div class="pcard-disc" style="top:10px;left:10px">-${d}%</div>`:''}${p.video?`<div class="pcard-video" style="bottom:10px;right:10px;font-size:11px">▶ Видео</div>`:''}`;
+  document.getElementById('modal-name').textContent = p.name;
+  document.getElementById('modal-meta').innerHTML = `<span style="color:#F59E0B;font-size:13px">${stars(p.rating)}</span><span style="font-size:12px;color:#6B7280">${p.reviews} шарҳ</span><span style="background:#EFF6FF;color:#3B82F6;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px">📦 ${p.weight}кг</span>${p.badge?`<span style="background:#F59E0B;color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px">${p.badge}</span>`:''}`;
+  updateModalPrice();
+
+  document.getElementById('tab-info').innerHTML = `<p style="font-size:13px;color:#4B5563;line-height:1.6;margin-bottom:12px">${p.desc}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:#F9FAFB;border-radius:10px;padding:10px"><div style="font-size:10px;color:#9CA3AF">Вазн</div><div style="font-weight:700">${p.weight}кг</div></div><div style="background:#F9FAFB;border-radius:10px;padding:10px"><div style="font-size:10px;color:#9CA3AF">Захира</div><div style="font-weight:700">${p.stock} дона</div></div></div>`;
+  document.getElementById('tab-shop').innerHTML = shop?`<div style="background:#F9FAFB;border-radius:12px;padding:12px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="font-size:32px">${shop.logo}</div><div><div style="font-weight:700;font-size:14px">${shop.name}</div><div style="font-size:11px;color:#6B7280">${shop.city} • ✅</div></div></div><div style="font-size:12px;color:#4B5563;margin-bottom:8px">${shop.desc}</div><div style="display:flex;gap:6px"><span style="background:#FFF3E0;color:#FF5722;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px">⭐ ${shop.rating}</span><span style="background:#E8F5E9;color:#2E7D32;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px">👥 ${shop.followers.toLocaleString()}</span></div></div>`:'';
+  document.getElementById('tab-reviews').innerHTML = `<div style="display:flex;flex-direction:column;gap:10px">${[{n:'Аҳмад Р.',t:'Маҳсулоти олӣ! Тавсия медиҳам.',s:5,d:'12.11.2024'},{n:'Зарина М.',t:'Ба маъқул омад, вале бастабандӣ беҳтар шавад.',s:4,d:'08.11.2024'}].map(r=>`<div style="background:#F9FAFB;border-radius:12px;padding:12px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-weight:800;font-size:13px">${r.n}</span><span style="font-size:10px;color:#9CA3AF">${r.d}</span></div><div style="color:#F59E0B;font-size:12px">${stars(r.s)}</div><p style="font-size:12px;color:#6B7280;margin-top:4px">${r.t}</p></div>`).join('')}</div>`;
+
+  renderChatMsgs();
+  document.getElementById('modal-qty').textContent = '1';
+  document.getElementById('prod-modal').classList.add('open');
+
+  // Reset tabs
+  document.querySelectorAll('.modal-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelector('.modal-tab').classList.add('active');
+  document.getElementById('tab-info').classList.add('active');
+}
+function closeProdModal() { document.getElementById('prod-modal').classList.remove('open'); }
+function updateModalPrice() {
+  const p = currentProd;
+  document.getElementById('modal-price').innerHTML = `<span style="font-size:24px;font-weight:900;color:#FF5722">${fmt(p.price*currentQty)}</span>${p.orig?`<span style="font-size:14px;color:#9CA3AF;text-decoration:line-through;margin-left:10px">${fmt(p.orig)}</span>`:''}`;
+  document.getElementById('modal-add-btn').textContent = `🛒 Ба сабад (${fmt(p.price*currentQty)})`;
+}
+function changeQty(d) {
+  currentQty = Math.max(1, currentQty+d);
+  document.getElementById('modal-qty').textContent = currentQty;
+  updateModalPrice();
+}
+function modalAddCart() {
+  addToCart({...currentProd, qty: currentQty});
+  closeProdModal();
+}
+function modalTab(id, btn) {
+  document.querySelectorAll('.modal-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+function renderChatMsgs() {
+  document.getElementById('chat-msgs').innerHTML = chatMsgs.map(m=>`<div class="chat-msg ${m.f==='b'?'buyer':'seller'}">${m.t}</div>`).join('');
+}
+function sendChat() {
+  const inp = document.getElementById('chat-input');
+  if(!inp.value.trim()) return;
+  chatMsgs.push({f:'b',t:inp.value});
+  chatMsgs.push({f:'s',t:'Ташаккур! Мо тез ҷавоб хоҳем дод 😊'});
+  inp.value='';
+  renderChatMsgs();
+}
+
+// SHOP MODAL
+function openShop(id) {
+  const s = SHOPS.find(x=>x.id===id);
+  const prods = PRODUCTS.filter(p=>p.shopId===id);
+  document.getElementById('shop-modal-content').innerHTML = `
+    <div class="modal-head"><div class="modal-title">Дӯкон</div><button class="modal-close" onclick="closeShopModal()">✕</button></div>
+    <div style="display:flex;gap:12px;margin-bottom:14px">
+      <div style="width:60px;height:60px;border-radius:14px;background:linear-gradient(135deg,#FFF3E0,#FFEFDF);display:flex;align-items:center;justify-content:center;font-size:30px">${s.logo}</div>
+      <div><div style="font-weight:900;font-size:17px;margin-bottom:2px">${s.name}</div><div style="font-size:12px;color:#6B7280;margin-bottom:5px">${s.city}</div><div style="display:flex;gap:5px"><span style="background:#FFF3E0;color:#FF5722;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px">⭐ ${s.rating}</span><span style="background:#F0FDF4;color:#10B981;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px">✅ Тасдиқ</span></div></div>
+    </div>
+    <p style="font-size:13px;color:#4B5563;margin-bottom:14px;line-height:1.6">${s.desc}</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      ${[{l:'Маҳсулотҳо',v:s.products},{l:'Донабинандагон',v:s.followers.toLocaleString()},{l:'Нақша',v:s.plan},{l:'Рейтинг',v:s.rating}].map(x=>`<div style="background:#F9FAFB;border-radius:10px;padding:10px"><div style="font-size:10px;color:#9CA3AF">${x.l}</div><div style="font-weight:800">${x.v}</div></div>`).join('')}
+    </div>
+    <div style="font-weight:800;font-size:14px;margin-bottom:10px">Маҳсулотҳо</div>
+    <div class="grid2">${prods.map(p=>pcardHTML(p,true)).join('')}</div>
+  `;
+  document.getElementById('shop-modal').classList.add('open');
+}
+function closeShopModal() { document.getElementById('shop-modal').classList.remove('open'); }
+
+// CART
+function renderCart() {
+  const cc = document.getElementById('cart-content');
+  document.getElementById('cart-title').textContent = `🛒 Сабад (${cart.length})`;
+  if(!cart.length) {
+    cc.innerHTML = `<div style="text-align:center;padding:40px"><div style="font-size:72px;margin-bottom:14px">🛒</div><div style="font-weight:900;font-size:18px;margin-bottom:8px">Сабад холӣ аст</div><div style="font-size:13px;color:#6B7280;margin-bottom:22px">Маҳсулотҳоро ба сабад илова кунед</div><button onclick="goPage('catalog')" style="background:linear-gradient(135deg,#FF5722,#FF7043);color:#fff;border:none;border-radius:12px;padding:12px 24px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit">🛍️ Харид кун</button></div>`;
+    return;
+  }
+  const tot = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const wt = cart.reduce((s,i)=>s+i.weight*i.qty,0);
+  const dp = wt<=1?15:wt<=3?25:wt<=5?35:50;
+  cc.innerHTML = `
+    ${cart.map(item=>`<div class="cart-item">
+      <div class="cart-img">${item.img}</div>
+      <div class="cart-info">
+        <div class="cart-name">${item.name}</div>
+        <div class="cart-price">${fmt(item.price)}</div>
+        <div class="cart-qty">
+          <button class="cqty-btn" style="border:1.5px solid #E5E7EB;background:#fff" onclick="cqty(${item.id},-1)">−</button>
+          <span class="cqty-val">${item.qty}</span>
+          <button class="cqty-btn" style="border:1.5px solid #FF5722;background:#FFF3E0;color:#FF5722" onclick="cqty(${item.id},1)">+</button>
+        </div>
+      </div>
+      <button class="cart-del" onclick="cartDel(${item.id})">🗑️</button>
+    </div>`).join('')}
+    <div style="background:#F0FDF4;border-radius:14px;padding:12px;margin-bottom:12px">
+      <div style="font-weight:800;font-size:13px;color:#065F46;margin-bottom:6px">🚚 Нархи таслим</div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#6B7280"><span>Умумии вазн: ${wt.toFixed(1)}кг</span><span style="font-weight:800;color:#10B981">${fmt(dp)}</span></div>
+    </div>
+    <div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;color:#6B7280;margin-bottom:8px"><span>Маҳсулот (${cart.length})</span><span>${fmt(tot)}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;color:#6B7280;margin-bottom:12px"><span>Таслим</span><span>${fmt(dp)}</span></div>
+      <div style="border-top:1.5px dashed #E5E7EB;padding-top:12px;display:flex;justify-content:space-between;font-weight:900;font-size:16px"><span>Ҷамъ</span><span style="color:#FF5722">${fmt(tot+dp)}</span></div>
+    </div>
+    <button onclick="showCheckout()" style="width:100%;background:linear-gradient(135deg,#FF5722,#FF7043);color:#fff;border:none;border-radius:14px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit">Фармоиш додан →</button>
+  `;
+}
+function cqty(id, d) { const i=cart.find(x=>x.id===id); if(i){ i.qty=Math.max(1,i.qty+d); } updateCartBadge(); renderCart(); }
+function cartDel(id) { cart=cart.filter(x=>x.id!==id); updateCartBadge(); renderCart(); }
+function showCheckout() {
+  const tot = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const wt = cart.reduce((s,i)=>s+i.weight*i.qty,0);
+  const dp = wt<=1?15:wt<=3?25:wt<=5?35:50;
+  document.getElementById('cart-content').innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+      <div style="font-weight:900;font-size:14px;margin-bottom:12px">📋 Маълумоти таслим</div>
+      <input id="co-addr" class="form-input" placeholder="Суроға (шаҳр, кӯча, хона)">
+      <input id="co-tel" class="form-input" placeholder="Рақами телефон" style="margin-bottom:0">
+    </div>
+    <div style="background:#fff;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+      <div style="font-weight:900;font-size:14px;margin-bottom:12px">💳 Усули пардохт</div>
+      ${[{id:'cod',l:'💵 Пул дар таслим',d:'Баъд аз гирифтани маҳсулот'},{id:'card',l:'💳 Корти бонкӣ',d:'Visa, Mastercard, SOMONI'},{id:'wallet',l:'📱 Ҳамёни рақамӣ',d:'ALIF Pay, Korti Milli'}].map((m,i)=>`<div class="pay-opt ${i===0?'selected':''}" onclick="selectPay(this)" data-pay="${m.id}"><div class="pay-radio ${i===0?'selected':''}"><div class="pay-dot"></div></div><div><div style="font-weight:800;font-size:13px">${m.l}</div><div style="font-size:11px;color:#6B7280">${m.d}</div></div></div>`).join('')}
+    </div>
+    <div style="background:#FFFBEB;border-radius:12px;padding:12px;margin-bottom:14px;font-size:12px;color:#92400E">🔒 Пул аввал дар платформа нигоҳ дошта мешавад.</div>
+    <div style="display:flex;gap:10px">
+      <button onclick="renderCart()" style="background:#F3F4F6;border:none;border-radius:12px;padding:12px 18px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;color:#374151">← Бозгашт</button>
+      <button onclick="confirmOrder(${tot+dp})" style="flex:1;background:linear-gradient(135deg,#FF5722,#FF7043);color:#fff;border:none;border-radius:12px;padding:14px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit">✅ Тасдиқ (${fmt(tot+dp)})</button>
+    </div>
+  `;
+}
+function selectPay(el) {
+  document.querySelectorAll('.pay-opt').forEach(o=>{o.classList.remove('selected');o.querySelector('.pay-radio').classList.remove('selected');});
+  el.classList.add('selected');
+  el.querySelector('.pay-radio').classList.add('selected');
+}
+function confirmOrder(total) {
+  const addr = document.getElementById('co-addr').value;
+  const tel = document.getElementById('co-tel').value;
+  if(!addr||!tel){showToast('⚠️ Суроға ва телефонро пур кунед');return;}
+  cart=[];
+  updateCartBadge();
+  document.getElementById('cart-content').innerHTML = `<div style="text-align:center;padding:40px"><div style="font-size:80px;margin-bottom:16px">🎉</div><div style="font-weight:900;font-size:22px;margin-bottom:8px">Фармоиш қабул шуд!</div><div style="font-size:14px;color:#6B7280;margin-bottom:24px">Ҳолати фармоишро пайгирӣ кунед</div><button onclick="goPage('orders')" style="background:linear-gradient(135deg,#FF5722,#FF7043);color:#fff;border:none;border-radius:12px;padding:12px 24px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit">📦 Фармоишҳоро бин</button></div>`;
+}
+
+// ORDERS
+function renderOrders() {
+  const steps=['ordered','processing','shipped','delivered'];
+  const lbls=['Фармоиш','Коркард','Равона','Расид'];
+  const icos=['📋','⚙️','🚚','✅'];
+  document.getElementById('orders-list').innerHTML = ORDERS.map(o=>{
+    const cur=steps.indexOf(o.status);
+    return `<div class="otrack">
+      <div class="otrack-head">
+        <span style="font-size:26px">${o.ico}</span>
+        <div><div style="font-weight:700;font-size:14px">${o.product}</div><div style="font-size:11px;color:#6B7280">${o.id} • ${o.date}</div></div>
+        <div style="margin-left:auto;font-weight:800;color:#FF5722;font-size:13px">${fmt(o.total)}</div>
+      </div>
+      <div class="otrack-steps">
+        ${steps.map((s,i)=>`<div class="ostep">
+          ${i<steps.length-1?`<div class="ostep-line" style="background:${i<cur?'#10B981':'#E5E7EB'}"></div>`:''}
+          <div class="ostep-circle" style="background:${i<=cur?'#10B981':'#E5E7EB'}">${icos[i]}</div>
+          <div class="ostep-lbl" style="color:${i<=cur?'#10B981':'#9CA3AF'};font-weight:${i===cur?800:400}">${lbls[i]}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// PROFILE
+function renderProfile() {
+  const pc = document.getElementById('profile-content');
+  if(!loggedIn) {
+    pc.innerHTML = `<div style="padding:28px 20px 100px"><div style="text-align:center;margin-bottom:28px"><div style="font-size:76px;margin-bottom:12px">👤</div><div style="font-weight:900;font-size:22px;margin-bottom:6px">Хуш омадед ба SavdoHub</div><div style="font-size:13px;color:#6B7280">Барои хариди осон ворид шавед</div></div><div style="display:flex;flex-direction:column;gap:10px"><button onclick="loggedIn=true;renderProfile()" style="background:linear-gradient(135deg,#FF5722,#FF7043);color:#fff;border:none;border-radius:14px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit">🔑 Ворид шавед</button><button style="background:transparent;border:2px solid #FF5722;border-radius:14px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;color:#FF5722;font-family:inherit">📱 Бо телефон</button><div style="text-align:center;font-size:12px;color:#9CA3AF;margin:6px 0">— ё —</div><button style="background:#F3F4F6;border:none;border-radius:14px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit">✉️ Бо имейл</button></div></div>`;
+    return;
+  }
+  pc.innerHTML = `
+    <div class="profile-header">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="profile-avatar">👨</div>
+        <div><div style="font-weight:900;font-size:17px;color:#fff">Аҳмад Муродов</div><div style="font-size:12px;color:rgba(255,255,255,.8)">+992 93 123 45 67</div><div style="margin-top:4px"><span style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px">🛍️ Харидор</span></div></div>
+      </div>
+      <div class="profile-stats">
+        ${[{l:'Фармоиш',v:4,i:'📦'},{l:'Дар сабад',v:3,i:'🛒'},{l:'Бонус',v:'15 сом.',i:'🎁'}].map(s=>`<div class="pstat"><div style="font-size:18px;margin-bottom:2px">${s.i}</div><div style="font-weight:900;font-size:15px;color:#fff">${s.v}</div><div style="font-size:9px;color:rgba(255,255,255,.8)">${s.l}</div></div>`).join('')}
+      </div>
+    </div>
+    <div style="display:flex;gap:4px;padding:10px 14px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.05);overflow-x:auto" id="prof-tabs">
+      <button class="chip active" onclick="profTab('profile',this)">👤 Профил</button>
+      <button class="chip" onclick="profTab('seller',this)">🏪 Фурӯшанда</button>
+      <button class="chip" onclick="profTab('delivery',this)">🚚 Таслим</button>
+      <button class="chip" onclick="profTab('plans',this)">💼 Нақшаҳо</button>
+    </div>
+    <div class="pad" style="padding-top:14px" id="prof-content"></div>
+  `;
+  profTab('profile', document.querySelector('#prof-tabs .chip'));
+}
+
+function profTab(id, btn) {
+  document.querySelectorAll('#prof-tabs .chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const pc = document.getElementById('prof-content');
+  if(id==='profile') {
+    pc.innerHTML = `
+      ${[{i:'❤️',l:'Дӯстдоштаҳо',v:'12 маҳсулот'},{i:'📦',l:'Фармоишҳо',a:"goPage('orders')"},{i:'🔔',l:'Огоҳиномаҳо',v:'3 нав'},{i:'📍',l:'Суроғаҳо',v:'1 суроға'},{i:'💬',l:'Паёмҳо',v:'2 нав'},{i:'⚙️',l:'Танзимот'}].map(x=>`<div class="menu-item" ${x.a?`onclick="${x.a}"`:''}>
+        <div style="display:flex;gap:10px;align-items:center"><span style="font-size:18px">${x.i}</span><span style="font-weight:700;font-size:14px">${x.l}</span></div>
+        <div style="display:flex;align-items:center;gap:5px">${x.v?`<span style="font-size:12px;color:#9CA3AF">${x.v}</span>`:''}<span style="color:#D1D5DB;font-size:18px">›</span></div>
+      </div>`).join('')}
+      <div style="background:linear-gradient(135deg,#10B981,#059669);border-radius:16px;padding:14px;margin-top:8px">
+        <div style="font-weight:900;font-size:14px;color:#fff;margin-bottom:4px">🎁 Дӯсти даъват кун</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.85);margin-bottom:10px">Ҳар ду +5 сомонӣ бонус мегиред!</div>
+        <div class="ref-box"><span class="ref-link">savdohub.tj/ref/AH234</span><button class="ref-copy" onclick="copyRef(this)">📋 Нусха</button></div>
+      </div>
+      <button onclick="loggedIn=false;renderProfile()" style="width:100%;margin-top:14px;background:none;border:none;color:#EF4444;font-weight:800;font-size:14px;cursor:pointer;padding:12px;font-family:inherit">🚪 Баромадан</button>
+    `;
+  } else if(id==='seller') {
+    pc.innerHTML = `<div style="background:linear-gradient(135deg,#3B82F6,#1D4ED8);border-radius:18px;padding:18px;margin-bottom:14px;color:#fff"><div style="font-size:18px;font-weight:900;margin-bottom:5px">🏪 Дӯкони худатонро кушоед!</div><div style="font-size:12px;opacity:.85;margin-bottom:14px">Ба миллионҳо харидорон дастрасӣ пайдо кунед</div><button style="background:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:800;font-size:13px;cursor:pointer;color:#1D4ED8;font-family:inherit">+ Дӯкон кушоед</button></div>${[{i:'📱',t:'Телеграм ва Фейсбук интегратсия'},{i:'📹',t:'Видеоҳои маҳсулот'},{i:'📍',t:'Намоиш дар харита'},{i:'📊',t:'Аналитикаи пурра'},{i:'🤝',t:'Системаи таслими осон'}].map(f=>`<div style="display:flex;gap:10px;padding:11px 0;border-bottom:1px solid #F3F4F6"><span style="font-size:18px">${f.i}</span><span style="font-size:13px;color:#4B5563">${f.t}</span></div>`).join('')}`;
+  } else if(id==='delivery') {
+    pc.innerHTML = `<div style="font-weight:900;font-size:14px;margin-bottom:12px">🚚 Нархи таслим</div>${[{w:'то 1кг',p:15,i:'📦'},{w:'1–3кг',p:25,i:'📦'},{w:'3–5кг',p:35,i:'📦'},{w:'5кг+',p:50,i:'🚚'}].map(d=>`<div style="background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,.05)"><div style="display:flex;gap:10px;align-items:center;font-weight:700;font-size:14px"><span style="font-size:22px">${d.i}</span>${d.w}</div><span style="font-weight:900;font-size:15px;color:#FF5722">${fmt(d.p)}</span></div>`).join('')}<div style="background:#F0FDF4;border-radius:14px;padding:12px;font-size:12px;color:#065F46">🔒 Пул аввал дар SavdoHub нигоҳ дошта мешавад.</div>`;
+  } else if(id==='plans') {
+    const plans = [{id:'basic',name:'Базавӣ',price:29,color:'#6B7280',prods:'то 20 маҳсулот',features:['то 20 маҳсулот','Намоиши маъмулӣ','Дастгирии асосӣ']},{id:'standard',name:'Стандартӣ',price:89,color:'#3B82F6',prods:'то 100 маҳсулот',features:['то 100 маҳсулот','Намоиши беҳтар','Дастгирии афзалиятнок','Видеоҳои маҳсулот']},{id:'premium',name:'Премиум',price:199,color:'#F59E0B',prods:'Маҳсулот беҳудуд',features:['Маҳсулоти беҳудуд','Намоиш дар саҳифаи аввал','Дастгирии VIP 24/7','Видеоҳо + Реклама','Аналитика пурра']}];
+    pc.innerHTML = `<div style="text-align:center;margin-bottom:18px"><div style="font-weight:900;font-size:19px;margin-bottom:5px">Нақшаҳои обуна</div><div style="font-size:13px;color:#6B7280">Барои фурӯшандагон</div></div>${plans.map(pl=>`<div class="plan-card" style="background:${pl.id==='premium'?'linear-gradient(135deg,#FFF9E6,#FFF3CC)':'#fff'};border:2px solid ${pl.id==='premium'?'#F59E0B':'#E5E7EB'}">${pl.id==='premium'?`<div class="plan-badge">👑 МАЪМУЛТАРИН</div>`:''}<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div><div style="font-weight:900;font-size:16px;color:${pl.color}">${pl.name}</div><div style="font-size:10px;color:#9CA3AF">${pl.prods}</div></div><div style="text-align:right"><div style="font-weight:900;font-size:22px">${fmt(pl.price)}</div><div style="font-size:10px;color:#9CA3AF">/ моҳ</div></div></div>${pl.features.map(f=>`<div style="font-size:12px;color:#4B5563;padding:4px 0;display:flex;gap:7px"><span style="color:#10B981;font-weight:900">✓</span>${f}</div>`).join('')}<button style="width:100%;margin-top:12px;background:${pl.id==='premium'?'linear-gradient(135deg,#FF5722,#FF7043)':'transparent'};border:${pl.id==='premium'?'none':'2px solid #FF5722'};border-radius:12px;padding:11px;font-weight:800;font-size:13px;cursor:pointer;color:${pl.id==='premium'?'#fff':'#FF5722'};font-family:inherit">${pl.id==='basic'?'Ройгон оғоз кунед':'Интихоб кунед'}</button></div>`).join('')}`;
+  }
+}
+
+// ADMIN
+function renderAdmin() {
+  adminTabContent(adminTabId);
+}
+function adminTab(id, btn) {
+  adminTabId = id;
+  document.querySelectorAll('#page-admin .chip').forEach(b=>{b.classList.remove('active');b.style.background='#F3F4F6';b.style.color='#374151';});
+  btn.classList.add('active');
+  btn.style.background='#1F2937';
+  btn.style.color='#fff';
+  adminTabContent(id);
+}
+function adminTabContent(id) {
+  const ac = document.getElementById('admin-content');
+  const AS = {sales:847600,orders:1243,sellers:89,buyers:5420,pending:15,rev:{subs:18700,del:9800,ads:12400,vip:8200}};
+  const tot = Object.values(AS.rev).reduce((a,b)=>a+b,0);
+  if(id==='dash') {
+    ac.innerHTML = `<div class="stat-grid">${[{l:'Умумии савдо',v:fmt(AS.sales),i:'💰',c:'#10B981'},{l:'Фармоишҳо',v:AS.orders,i:'📦',c:'#3B82F6'},{l:'Фурӯшандагон',v:AS.sellers,i:'🏪',c:'#F59E0B'},{l:'Харидорон',v:AS.buyers.toLocaleString(),i:'👥',c:'#8B5CF6'}].map(s=>`<div class="stat-card"><div style="font-size:22px;margin-bottom:6px">${s.i}</div><div style="font-weight:900;font-size:15px;color:${s.c}">${s.v}</div><div style="font-size:10px;color:#9CA3AF">${s.l}</div></div>`).join('')}</div><div style="background:#fff;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)"><div style="font-weight:900;font-size:14px;margin-bottom:12px">📈 Манбаъҳои даромад</div>${[{l:'Обунаҳои фурӯшанда',v:AS.rev.subs,c:'#3B82F6'},{l:'Ҳаққи таслим',v:AS.rev.del,c:'#10B981'},{l:'Реклама',v:AS.rev.ads,c:'#F59E0B'},{l:'VIP дӯконҳо',v:AS.rev.vip,c:'#8B5CF6'}].map(r=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px"><span style="color:#4B5563">${r.l}</span><span style="font-weight:800">${fmt(r.v)}</span></div><div style="height:8px;background:#F3F4F6;border-radius:4px;overflow:hidden"><div style="height:100%;width:${(r.v/tot)*100}%;background:${r.c};border-radius:4px"></div></div></div>`).join('')}</div><div style="background:#FFFBEB;border-radius:14px;padding:14px;border:1.5px solid #F59E0B"><div style="font-weight:900;font-size:14px;color:#92400E;margin-bottom:6px">⏳ Дар интизор (${AS.pending})</div><div style="font-size:12px;color:#92400E;margin-bottom:10px">Фурӯшандагоне, ки тасдиқро интизоранд</div><button style="background:linear-gradient(135deg,#FF5722,#FF7043);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-weight:800;font-size:12px;cursor:pointer;font-family:inherit">Баррасӣ кунед →</button></div>`;
+  } else if(id==='users') {
+    ac.innerHTML = `<div style="font-weight:900;font-size:14px;margin-bottom:12px">👥 Идораи корбарон</div>${SHOPS.slice(0,5).map(s=>`<div style="background:#fff;border-radius:14px;padding:12px;margin-bottom:10px;display:flex;gap:10px;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,.05)"><span style="font-size:26px">${s.logo}</span><div style="flex:1"><div style="font-weight:800;font-size:13px">${s.name}</div><div style="font-size:11px;color:#6B7280">${s.city} • ${s.plan}</div></div><div style="display:flex;gap:6px"><button style="background:#FEE2E2;border:none;border-radius:8px;padding:5px 9px;color:#EF4444;font-size:10px;font-weight:800;cursor:pointer">🚫 Блок</button><button style="background:#D1FAE5;border:none;border-radius:8px;padding:5px 9px;color:#10B981;font-size:10px;font-weight:800;cursor:pointer">✅ OK</button></div></div>`).join('')}`;
+  } else if(id==='orders') {
+    ac.innerHTML = `<div style="font-weight:900;font-size:14px;margin-bottom:12px">📦 Фармоишҳо</div>${ORDERS.map(o=>`<div style="background:#fff;border-radius:14px;padding:12px;margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,.05)"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-weight:800;font-size:13px">${o.id}</span><span style="font-weight:800;font-size:12px;color:#FF5722">${fmt(o.total)}</span></div><div style="font-size:12px;color:#4B5563;margin-bottom:6px">${o.product}</div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;color:#9CA3AF">${o.date}</span><span style="font-size:11px;font-weight:800;color:${sClr(o.status)};background:${sClr(o.status)}20;padding:3px 10px;border-radius:20px">${sLbl(o.status)}</span></div></div>`).join('')}`;
+  } else if(id==='earn') {
+    ac.innerHTML = `<div style="background:linear-gradient(135deg,#10B981,#059669);border-radius:18px;padding:18px;margin-bottom:14px;color:#fff"><div style="font-size:11px;opacity:.8;margin-bottom:3px">Умумии даромад (ноябр)</div><div style="font-weight:900;font-size:28px">${fmt(tot)}</div></div>${[{l:'Обунаҳо',v:AS.rev.subs,i:'📊',p:'+12%'},{l:'Таслим',v:AS.rev.del,i:'🚚',p:'+8%'},{l:'Реклама',v:AS.rev.ads,i:'📢',p:'+25%'},{l:'VIP дӯконҳо',v:AS.rev.vip,i:'👑',p:'+5%'}].map(e=>`<div style="background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,.05)"><div style="display:flex;gap:10px;align-items:center"><span style="font-size:22px">${e.i}</span><div><div style="font-weight:700;font-size:13px">${e.l}</div><div style="font-size:10px;color:#10B981;font-weight:800">${e.p} ин моҳ</div></div></div><span style="font-weight:900;font-size:15px">${fmt(e.v)}</span></div>`).join('')}`;
+  }
+}
+
+function copyRef(btn) { btn.textContent='✓ Нусха'; setTimeout(()=>btn.textContent='📋 Нусха',2000); }
+
+// INIT
+initHome();
+renderAdmin();
+</script>
+</body>
+  </html>
